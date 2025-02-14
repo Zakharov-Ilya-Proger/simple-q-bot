@@ -186,7 +186,7 @@ async def handle_answer(call: types.CallbackQuery):
     if current_question + 1 >= len(get_questions(language=user_data["lang"])):
         await finish_session(user_id, answers)
     else:
-
+        await bot.delete_message(chat_id=call.message.chat_id, message_id=call.message.message_id)
         await ask_next_question(call.message, user_data['lang'], current_question + 1)
 
     await call.answer()
