@@ -184,16 +184,16 @@ async def handle_answer(call: types.CallbackQuery):
 
 
     if current_question + 1 >= len(get_questions(language=user_data["lang"])):
-        await bot.delete_message(chat_id=call.message.chat_id, message_id=call.message.message_id)
-        await finish_session(user_id, answers)
+        await finish_session(user_id, answers, call.message)
     else:
-        await bot.delete_message(chat_id=call.message.chat_id, message_id=call.message.message_id)
         await ask_next_question(call.message, user_data['lang'], current_question + 1)
 
     await call.answer()
 
 
-async def finish_session(user_id: str, answers: list):
+async def finish_session(user_id: str, answers: list, message: types.Message):
+
+    await bot.delete_message(message.chat.id, message.message_id)
 
     anx_answers = answers[:7]
     dep_answers = answers[7:]
@@ -228,7 +228,15 @@ async def finish_session(user_id: str, answers: list):
 
 async def ask_next_question(message: types.Message, lang, question_index: int):
     question = get_questions(language=lang)[question_index]
-    await message.answer(question, reply_markup=create_answer_keyboard())
+    if question_index == 0:
+        await message.answer(question, reply_markup=create_answer_keyboard())
+    else:
+        await bot.edit_message_text(
+            chat_id=message.chat.id,
+            message_id=message.message_id,
+            text=question,
+            reply_markup=create_answer_keyboard()
+        )
 
 
 async def result_anx_dep(anx_total: int, dep_total: int, language: str) -> str:
