@@ -187,14 +187,12 @@ async def handle_answer(call: types.CallbackQuery):
         await finish_session(user_id, answers, call.message)
     else:
         await ask_next_question(call.message, user_data['lang'], current_question + 1)
-
     await call.answer()
 
 
 async def finish_session(user_id: str, answers: list, message: types.Message):
 
     await bot.delete_message(message.chat.id, message.message_id)
-
     anx_answers = answers[:7]
     dep_answers = answers[7:]
 
